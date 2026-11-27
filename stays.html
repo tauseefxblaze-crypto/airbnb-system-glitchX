@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All stays | StayNest</title>
+  <meta name="description" content="Browse cabins, havelis, sea-view apartments and desert camps across Pakistan. Filter by mood, sort by price and save your favourites.">
+  <meta name="theme-color" content="#0f1b2a">
+  <link rel="icon" href="img/logo.png" type="image/png">
+  <script>(function(){var d=document.documentElement,t=null;d.classList.add('js');try{t=localStorage.getItem('sn-theme')}catch(e){}d.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="index.html" aria-label="StayNest home">
+      <img class="logo-mark" src="img/logo.png" alt="GlitchX Studio logo" width="42" height="42" loading="lazy">
+      <span>Stay<em>Nest</em></span>
+    </a>
+    <nav class="main-nav" id="main-nav" aria-label="Main">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="stays.html" aria-current="page">Stays</a></li>
+        <li><a href="experiences.html">Experiences</a></li>
+        <li><a href="destinations.html">Destinations</a></li>
+        <li><a href="host.html">Become a host</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="help.html">Help</a></li>
+        <li class="nav-login"><a href="login.html">Log in</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a class="icon-btn" href="stays.html?saved=1" aria-label="Your wishlist">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>
+        <span class="wish-count" data-wish-count hidden>0</span>
+      </a>
+      <button class="icon-btn theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" data-theme-toggle>
+        <svg class="i i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+        <svg class="i i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="btn btn-outline btn-sm header-login" href="login.html"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Log in</a>
+      <a class="btn btn-primary btn-sm header-cta" href="stays.html">Find a stay</a>
+      <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav" data-menu-toggle>
+        <svg class="i i-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="i i-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1" data-collection-scope>
+
+  <div class="container page-head">
+    <p class="eyebrow">12 handpicked stays</p>
+    <h1>Find your kind of place</h1>
+    <p class="lead">From Hunza's glass cabins to Karachi's rooftop pools. Tap a mood to narrow things down, or search by city.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="container toolbar-inner">
+      <form class="search-input" role="search" aria-label="Search stays">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="sr-only" for="stay-search">Search by city, area or name</label>
+        <input id="stay-search" type="search" placeholder="Search by city, area or name" autocomplete="off" data-search>
+      </form>
+      <div class="toolbar-row">
+        <div class="chip-row" role="group" aria-label="Filter by type">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" type="button" data-filter="cabins" aria-pressed="false">Cabins</button>
+          <button class="chip" type="button" data-filter="mountains" aria-pressed="false">Mountain views</button>
+          <button class="chip" type="button" data-filter="waterfront" aria-pressed="false">Waterfront</button>
+          <button class="chip" type="button" data-filter="city" aria-pressed="false">City stays</button>
+          <button class="chip" type="button" data-filter="pools" aria-pressed="false">Pools</button>
+          <button class="chip" type="button" data-filter="heritage" aria-pressed="false">Heritage</button>
+          <button class="chip" type="button" data-filter="desert" aria-pressed="false">Desert</button>
+          <button class="chip" type="button" data-filter="countryside" aria-pressed="false">Countryside</button>
+          <button class="chip" type="button" data-filter="saved" aria-pressed="false">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>Saved
+          </button>
+        </div>
+      </div>
+      <label class="sort">
+        <span>Sort by</span>
+        <select data-sort aria-label="Sort stays">
+          <option value="recommended">Recommended</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="rating">Top rated</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <section class="container" aria-labelledby="results-title">
+    <div class="results-meta">
+      <h2 id="results-title" class="sr-only">Results</h2>
+      <p aria-live="polite"><span data-count>12 stays</span> · prices include all fees</p>
+    </div>
+
+    <div class="grid-cards" data-collection data-noun="stay">
+      <article class="card reveal" data-item data-id="glass-cabin-hunza" data-category="cabins mountains" data-location="Karimabad, Hunza" data-price="14500" data-rating="4.97" data-order="1">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1761782791727-3994283faa88?auto=format&fit=crop&w=800&h=600&q=70" alt="Bright A-frame living room with tall windows facing a forest" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Glass Cabin with Rakaposhi View</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.97<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Karimabad, Hunza · 2 bedrooms · 4 guests</p>
+            <p class="card-price"><strong>Rs 14,500</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">Guest favourite</span>
+        <button class="heart" type="button" data-wish="glass-cabin-hunza" data-name="Glass Cabin" aria-label="Save Glass Cabin with Rakaposhi View to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="gulberg-loft" data-category="city" data-location="Gulberg III, Lahore" data-price="9000" data-rating="4.86" data-order="2">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=800&h=600&q=70" alt="Living room with a large window, a grey sofa and indoor plants" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Sunlit Loft in Gulberg</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.86<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Gulberg III, Lahore · 1 bedroom · 3 guests</p>
+            <p class="card-price"><strong>Rs 9,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="gulberg-loft" data-name="Sunlit Loft" aria-label="Save Sunlit Loft in Gulberg to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="clifton-sea-view" data-category="city waterfront" data-location="Clifton, Karachi" data-price="12000" data-rating="4.81" data-order="3">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1758448511320-05d7d28f4298?auto=format&fit=crop&w=800&h=600&q=70" alt="Modern living room with a sectional sofa and a wide ocean view" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Sea-View Apartment in Clifton</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.81<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Clifton, Karachi · 2 bedrooms · 4 guests</p>
+            <p class="card-price"><strong>Rs 12,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="clifton-sea-view" data-name="Sea-View Apartment" aria-label="Save Sea-View Apartment in Clifton to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="pine-cottage-murree" data-category="cabins mountains" data-location="Bhurban, Murree" data-price="11000" data-rating="4.92" data-order="4">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1680703486830-1b5af60635d7?auto=format&fit=crop&w=800&h=600&q=70" alt="Cosy living room with a stone fireplace and wooden furniture" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Pine Forest Cottage</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.92<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Bhurban, Murree · 3 bedrooms · 6 guests</p>
+            <p class="card-price"><strong>Rs 11,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">Guest favourite</span>
+        <button class="heart" type="button" data-wish="pine-cottage-murree" data-name="Pine Forest Cottage" aria-label="Save Pine Forest Cottage to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="margalla-family-house" data-category="city countryside" data-location="F-7, Islamabad" data-price="16000" data-rating="4.88" data-order="5">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1780427670049-43aa7921e3f0?auto=format&fit=crop&w=800&h=600&q=70" alt="Spacious open-plan living room and kitchen with wooden shelves" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Family House by the Margalla Hills</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.88<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">F-7, Islamabad · 4 bedrooms · 8 guests</p>
+            <p class="card-price"><strong>Rs 16,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="margalla-family-house" data-name="Family House" aria-label="Save Family House by the Margalla Hills to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="kachura-lake-hut" data-category="cabins waterfront mountains" data-location="Kachura, Skardu" data-price="13000" data-rating="4.95" data-order="6">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1602147557719-1d65f9e58a24?auto=format&fit=crop&w=800&h=600&q=70" alt="Wooden house beside a turquoise lake with mountains behind" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Lakeside Hut at Lower Kachura</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.95<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Kachura, Skardu · 1 bedroom · 3 guests</p>
+            <p class="card-price"><strong>Rs 13,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">Guest favourite</span>
+        <button class="heart" type="button" data-wish="kachura-lake-hut" data-name="Lakeside Hut" aria-label="Save Lakeside Hut at Lower Kachura to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="kalam-riverside-villa" data-category="countryside mountains waterfront" data-location="Kalam, Swat" data-price="22000" data-rating="4.90" data-order="7">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1550586678-f7225f03c44b?auto=format&fit=crop&w=800&h=600&q=70" alt="Wooden cabin and a small pond on a green mountain slope" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Riverside Villa in Kalam</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.90<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Kalam, Swat · 5 bedrooms · 10 guests</p>
+            <p class="card-price"><strong>Rs 22,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="kalam-riverside-villa" data-name="Riverside Villa" aria-label="Save Riverside Villa in Kalam to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="haveli-room-lahore" data-category="heritage city" data-location="Walled City, Lahore" data-price="4500" data-rating="4.93" data-order="8">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&h=600&q=70" alt="Bedroom with a carved wooden bed, teal pillows and a garden view" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Courtyard Room in an Old Haveli</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.93<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Walled City, Lahore · 1 bedroom · 2 guests</p>
+            <p class="card-price"><strong>Rs 4,500</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">Rare find</span>
+        <button class="heart" type="button" data-wish="haveli-room-lahore" data-name="Courtyard Room" aria-label="Save Courtyard Room in an Old Haveli to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="naran-chalet" data-category="cabins mountains waterfront" data-location="Naran, Kaghan Valley" data-price="9500" data-rating="4.84" data-order="9">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1773423391716-04e278b07b1b?auto=format&fit=crop&w=800&h=600&q=70" alt="Bedroom with wood-panelled walls and a window onto the valley" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Wooden Chalet by the Kunhar</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.84<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Naran, Kaghan Valley · 2 bedrooms · 5 guests</p>
+            <p class="card-price"><strong>Rs 9,500</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="naran-chalet" data-name="Wooden Chalet" aria-label="Save Wooden Chalet by the Kunhar to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="dha-penthouse" data-category="pools city" data-location="DHA Phase 8, Karachi" data-price="35000" data-rating="4.89" data-order="10">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&h=600&q=70" alt="Modern white house with a long swimming pool at dusk" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Rooftop-Pool Penthouse</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.89<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">DHA Phase 8, Karachi · 4 bedrooms · 8 guests</p>
+            <p class="card-price"><strong>Rs 35,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">Luxe</span>
+        <button class="heart" type="button" data-wish="dha-penthouse" data-name="Rooftop-Pool Penthouse" aria-label="Save Rooftop-Pool Penthouse to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="blue-area-studio" data-category="city" data-location="Blue Area, Islamabad" data-price="6500" data-rating="4.78" data-order="11">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1759691555285-74005fcf3ddf?auto=format&fit=crop&w=800&h=600&q=70" alt="Minimal living room with a soft sofa and a large window" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Smart Studio near Centaurus</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.78<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Blue Area, Islamabad · Studio · 2 guests</p>
+            <p class="card-price"><strong>Rs 6,500</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <button class="heart" type="button" data-wish="blue-area-studio" data-name="Smart Studio" aria-label="Save Smart Studio near Centaurus to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+
+      <article class="card reveal" data-item data-id="cholistan-camp" data-category="desert countryside" data-location="Derawar, Bahawalpur" data-price="8000" data-rating="4.91" data-order="12">
+        <a class="card-link" href="stay-detail.html">
+          <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1559586616-361e18714958?auto=format&fit=crop&w=800&h=600&q=70" alt="Camels resting on golden desert sand" width="800" height="600" loading="lazy"></div>
+          <div class="card-body">
+            <div class="card-top"><h3 class="card-title">Cholistan Desert Camp</h3><span class="rating"><svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>4.91<span class="sr-only"> out of 5</span></span></div>
+            <p class="card-meta">Derawar, Bahawalpur · 2 tents · 6 guests</p>
+            <p class="card-price"><strong>Rs 8,000</strong> <span>/ night</span></p>
+          </div>
+        </a>
+        <span class="badge">New</span>
+        <button class="heart" type="button" data-wish="cholistan-camp" data-name="Desert Camp" aria-label="Save Cholistan Desert Camp to wishlist" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1 5 2.9 1.6-1.9 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg></button>
+      </article>
+    </div>
+
+    <div class="empty-state" data-empty hidden>
+      <h3>No stays match that</h3>
+      <p>Try another city or mood. If you were looking at saved stays, tap a heart on any card to save it.</p>
+      <button class="btn btn-primary" type="button" data-reset>Show all stays</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <a class="logo" href="index.html" aria-label="StayNest home">
+        <img class="logo-mark" src="img/logo.png" alt="GlitchX Studio logo" width="42" height="42" loading="lazy">
+        <span>Stay<em>Nest</em></span>
+      </a>
+      <p>Handpicked homes, cabins and havelis across Pakistan, hosted by people who love where they live.</p>
+    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div>
+        <h2 class="footer-h">Explore</h2>
+        <ul>
+          <li><a href="stays.html">All stays</a></li>
+          <li><a href="experiences.html">Experiences</a></li>
+          <li><a href="destinations.html">Destinations</a></li>
+          <li><a href="stays.html?saved=1">Your wishlist</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-h">Hosting</h2>
+        <ul>
+          <li><a href="host.html">Become a host</a></li>
+          <li><a href="host.html#earnings">Earnings estimate</a></li>
+          <li><a href="host.html#host-faq">Hosting FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-h">StayNest</h2>
+        <ul>
+          <li><a href="about.html">About us</a></li>
+          <li><a href="help.html">Help centre</a></li>
+          <li><a href="help.html#contact">Contact us</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; <span data-year>2026</span> StayNest · A front-end design project</p>
+    <p>Prices in PKR · Photos from Unsplash</p>
+  </div>
+</footer>
+<button class="to-top" type="button" aria-label="Back to top" data-to-top>
+  <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+<script src="js/main.js"></script>
+</body>
+</html>
