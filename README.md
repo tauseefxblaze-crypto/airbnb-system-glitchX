@@ -1,8 +1,13 @@
 # StayNest: front-end layout
 
-StayNest is a made-up stay and home-rental brand for Pakistan (cabins in Hunza, havelis in Lahore, sea-view flats in Karachi). This folder holds the **front-end layout only**: plain HTML, CSS and vanilla JavaScript. There is no backend, database, login or real booking.
+StayNest is a made-up stay and home-rental brand for Pakistan (cabins in Hunza, havelis in Lahore, sea-view flats in Karachi). This folder holds the **front-end layout only**: plain HTML, CSS and vanilla JavaScript. There is no backend, database, real accounts or real booking.
+
+- **Live site:** https://tauseefxblaze-crypto.github.io/airbnb-system-glitchX/
+- **Code:** https://github.com/tauseefxblaze-crypto/airbnb-system-glitchX
 
 ## How to open it
+
+Open the **live site** link above, or run it from your computer:
 
 1. Open this folder.
 2. Double-click **`index.html`**. It opens in your browser.
