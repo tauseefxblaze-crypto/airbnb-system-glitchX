@@ -11,7 +11,8 @@
   // localStorage can throw (private mode, blocked storage) - never let that break the page
   var storage = {
     get: function (key) { try { return localStorage.getItem(key); } catch (e) { return null; } },
-    set: function (key, value) { try { localStorage.setItem(key, value); } catch (e) { /* ignore */ } }
+    set: function (key, value) { try { localStorage.setItem(key, value); } catch (e) { /* ignore */ } },
+    remove: function (key) { try { localStorage.removeItem(key); } catch (e) { /* ignore */ } }
   };
 
   var formatPKR = function (n) { return 'Rs ' + Math.round(n).toLocaleString('en-US'); };
@@ -30,8 +31,10 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('is-visible'); }, 2800);
   }
 
-  /* ---------- Dark mode (choice remembered) ---------- */
+  /* ---------- Dark mode (follows the device; the toggle is an override) ---------- */
   var themeBtn = $('[data-theme-toggle]');
+  var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  function deviceTheme() { return darkQuery.matches ? 'dark' : 'light'; }
   function syncThemeButton() {
     if (themeBtn) themeBtn.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
   }
@@ -39,10 +42,17 @@
     themeBtn.addEventListener('click', function () {
       var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
       root.dataset.theme = next;
-      storage.set('sn-theme', next);
+      // picking the device's own theme is no override, so go back to following the device
+      if (next === deviceTheme()) storage.remove('sn-theme'); else storage.set('sn-theme', next);
       syncThemeButton();
     });
   }
+  // device switched day/night: follow it right away and drop any old manual choice
+  darkQuery.addEventListener('change', function () {
+    storage.remove('sn-theme');
+    root.dataset.theme = deviceTheme();
+    syncThemeButton();
+  });
   syncThemeButton();
 
   /* ---------- Mobile menu ---------- */
