@@ -2,7 +2,7 @@
 
 StayNest is a made-up stay and home-rental brand for Pakistan (cabins in Hunza, havelis in Lahore, sea-view flats in Karachi). The pages are plain HTML, CSS and vanilla JavaScript. A small **Node.js + Express** server with a **SQLite** database adds real accounts (sign up, log in, password reset) and bookings you can create, change and cancel.
 
-- **Live site:** https://glitchx-staynest.netlify.app/
+- **Live site:** https://glitchx-staynext.netlify.app/
 - **Code:** https://github.com/GlitchX-Studio/airbnb-system-glitchX
 
 ## How to run it
