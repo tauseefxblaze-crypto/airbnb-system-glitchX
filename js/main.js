@@ -67,7 +67,10 @@
   // Only same-site paths like "/account", never "//evil.com"
   function nextUrl() {
     var next = new URLSearchParams(window.location.search).get('next') || '';
-    return /^\/(?![/\\])/.test(next) ? next : '';
+    if (!/^\/(?![/\\])/.test(next)) return '';
+    // resolve it like the browser will (it drops tabs/newlines), so "/\t/evil.site" can't leave this site
+    var url = new URL(next, window.location.origin);
+    return url.origin === window.location.origin ? url.pathname + url.search + url.hash : '';
   }
 
   /* ---------- Dark mode (follows the device; the toggle is an override) ---------- */
