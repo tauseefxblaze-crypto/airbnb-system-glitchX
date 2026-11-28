@@ -104,11 +104,19 @@ function deviceName(ua) {
 }
 
 function createApp(options = {}) {
-  const isProd = options.production ?? process.env.NODE_ENV === 'production';
-  const appUrl = String(options.appUrl || process.env.APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
-  const rounds = Number(options.bcryptRounds || process.env.BCRYPT_ROUNDS) || 12;
-  const db = openDb(options.dbPath || process.env.DB_PATH || path.join(ROOT, 'data', 'staynest.db'));
-  const mailLog = 'mailLog' in options ? options.mailLog : path.join(ROOT, 'data', 'mail.log');
+  const env = process.env;
+  const isProd = options.production ?? env.NODE_ENV === 'production';
+  // Railway sets RAILWAY_PUBLIC_DOMAIN and RAILWAY_VOLUME_MOUNT_PATH itself once a domain and a volume are added
+  const appUrl = String(options.appUrl || env.APP_URL || (env.RAILWAY_PUBLIC_DOMAIN ? `https://${env.RAILWAY_PUBLIC_DOMAIN}` : '') ||
+    (isProd ? '' : `http://localhost:${env.PORT || 3000}`)).replace(/\/+$/, '');
+  if (!appUrl) throw new Error('Set APP_URL to the site\'s public https address before running in production.');
+  const rounds = Number(options.bcryptRounds || env.BCRYPT_ROUNDS) || 12;
+  const dbFile = options.dbPath || env.DB_PATH || path.join(env.RAILWAY_VOLUME_MOUNT_PATH || path.join(ROOT, 'data'), 'staynest.db');
+  if (isProd && !options.dbPath && !env.DB_PATH && !env.RAILWAY_VOLUME_MOUNT_PATH) {
+    console.warn('[warning] No volume or DB_PATH: accounts are saved on a temporary disk and will be lost on restart.');
+  }
+  const db = openDb(dbFile);
+  const mailLog = 'mailLog' in options ? options.mailLog : path.join(path.dirname(dbFile), 'mail.log');
   const SID = isProd ? '__Host-sn_sid' : 'sn_sid';
   const CSRF = isProd ? '__Host-sn_csrf' : 'sn_csrf';
   const limiter = createLimiter();
@@ -132,14 +140,15 @@ function createApp(options = {}) {
   cleanUp();
   setInterval(cleanUp, 60 * MINUTE).unref();
 
-  // shortcut: a dev "mailbox" (data/mail.log + memory); swap sendMail for a real email service before launch
+  // shortcut: no email service yet, so mail goes to mail.log (next to the database) and the server log,
+  // which only the site owner can read; connect a real email service before real users rely on resets
   function sendMail(to, subject, text) {
     outbox.push({ to, subject, text });
-    if (mailLog) {
-      fs.mkdirSync(path.dirname(mailLog), { recursive: true });
-      fs.appendFileSync(mailLog, `--- ${new Date().toISOString()}\nTo: ${to}\nSubject: ${subject}\n\n${text}\n\n`);
-      console.log(`[dev mail] "${subject}" written to ${path.relative(ROOT, mailLog)}`);
-    }
+    if (!mailLog) return;
+    const entry = `--- ${new Date().toISOString()}\nTo: ${to}\nSubject: ${subject}\n\n${text}\n`;
+    fs.mkdirSync(path.dirname(mailLog), { recursive: true });
+    fs.appendFileSync(mailLog, entry + '\n');
+    console.log('[dev mail]\n' + entry);
   }
 
   const cookieOpts = (maxAge) => ({ httpOnly: true, secure: isProd, sameSite: 'lax', path: '/', ...(maxAge ? { maxAge } : {}) });
@@ -217,7 +226,9 @@ function createApp(options = {}) {
   const app = express();
 
   if (isProd) {
-    app.set('trust proxy', 1); // behind the host's HTTPS proxy (Render, Railway, ...)
+    // Railway's edge replaces any X-Forwarded-* headers a visitor sends, so the first entry is the real visitor
+    // (needed for the per-IP login limit). shortcut: Railway-specific; on another host, trust only its proxy hops
+    app.set('trust proxy', true);
     app.use((req, res, next) => (req.secure ? next() : res.redirect(308, appUrl + req.originalUrl)));
   }
 
@@ -544,8 +555,7 @@ function createApp(options = {}) {
 
 if (require.main === module) {
   const port = Number(process.env.PORT) || 3000;
-  const app = createApp({ appUrl: process.env.APP_URL || `http://localhost:${port}` });
-  app.listen(port, () => console.log(`StayNest is running at http://localhost:${port}`));
+  createApp().listen(port, () => console.log(`StayNest is running on port ${port} (http://localhost:${port} on this computer)`));
 }
 
 module.exports = { createApp };

@@ -7,7 +7,7 @@ StayNest is a made-up stay and home-rental brand for Pakistan (cabins in Hunza, 
 
 ## How to run it
 
-You need [Node.js](https://nodejs.org) 22.13 or newer (it has SQLite built in).
+You need [Node.js](https://nodejs.org) 24 (it has SQLite built in).
 
 1. Open a terminal in this folder.
 2. Install the packages once: `npm install`
@@ -20,7 +20,7 @@ Accounts are saved in `data/staynest.db`, created on first start. Delete that fi
 
 **Run the tests:** `npm test` (18 automated tests, using a throwaway in-memory database).
 
-> The **live site** on GitHub Pages can't run a server, so it is a design preview: the pages work, but log-in, sign-up and booking say they need the StayNest server. To put accounts online, host it on a Node host such as Render or Railway (see *Going live* below).
+> The **live site** on GitHub Pages can't run a server, so it is a design preview: the pages work, but log-in, sign-up and booking say they need the StayNest server. To put accounts online, host it on Railway (see *Going live* below).
 
 Every page links to the others, so you can browse the whole site from the home page.
 
@@ -94,20 +94,27 @@ data/                    database and dev mailbox (created on first start, not i
 - Private pages and data are checked **on the server**: `/account` and `/api/account` always use the logged-in session, never an ID from the URL, and touching someone else's booking or device returns **403**.
 - Email, password and the internal user ID never appear in URLs or on public pages. Reset links are one-time and expire after 30 minutes.
 
-## Going live
+## Going live (Railway)
 
-Set these on the host, then run `npm start`:
+1. Sign in at [railway.com](https://railway.com) with GitHub, then **New Project → Deploy from GitHub repo** and pick this repository. Railway runs `npm install` and `npm start` by itself.
+2. In the service's **Variables**, add `NODE_ENV` = `production` (secure cookies and the HTTPS redirect).
+3. Add a **Volume** to the service, mounted at `/data`. The database and `mail.log` are saved there, so accounts survive restarts and redeploys.
+4. In **Settings → Networking**, click **Generate Domain**. That `….up.railway.app` address is the live site.
+
+Railway tells the app its volume and its web address, so nothing else needs setting. Every push to `main` redeploys the site. Password-reset emails appear in the service's **Deploy Logs**, which only you can see.
+
+On another host, set these instead:
 
 | Variable | Example | Why |
 |---|---|---|
 | `NODE_ENV` | `production` | Secure cookies and the HTTPS redirect |
-| `APP_URL` | `https://staynest.example.com` | Used in reset links and the HTTPS redirect |
+| `APP_URL` | `https://staynest.example.com` | Used in reset links and the HTTPS redirect (required in production) |
 | `PORT` | `3000` | Most hosts set this for you |
 | `DB_PATH` | `/data/staynest.db` | Keep the database on a disk that survives restarts |
 
 ## Notes and limits
 
-- Reset emails go to `data/mail.log`, not a real inbox. Connect an email service (such as Resend or SendGrid) in `sendMail` in `server.js` before real users rely on it.
+- Reset emails go to `data/mail.log` and the server log, not a real inbox. Connect an email service (such as Resend or SendGrid) in `sendMail` in `server.js` before real users rely on it.
 - Log-in lockout counters are kept in memory, so they reset when the server restarts.
 - Only the Glass Cabin can be booked online, and the contact form still doesn't send anything.
 - On GitHub Pages (no server) the account features show a "needs the StayNest server" message.
