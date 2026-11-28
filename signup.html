@@ -59,11 +59,13 @@
       <h1 id="signup-title" style="font-size:clamp(2rem,4vw,2.8rem)">Create your account</h1>
       <p class="lead" style="margin-top:12px">Save the stays you love, keep every trip in one place and message hosts directly. It's free.</p>
 
-      <form class="form" id="signup-form" method="post" novalidate data-validate data-success="signup-success" style="margin-top:28px">
+      <form class="form" id="signup-form" method="post" novalidate data-validate data-api="/api/signup" data-done="signup" style="margin-top:28px">
+        <div class="form-error" data-form-error role="alert" hidden></div>
         <div class="field">
-          <label for="s-name">Full name</label>
-          <input class="input" id="s-name" name="name" type="text" autocomplete="name" required minlength="2" data-required="Please tell us your name." aria-describedby="s-name-error">
-          <p class="field-error" id="s-name-error" aria-live="polite"></p>
+          <label for="s-username">Username</label>
+          <input class="input" id="s-username" name="username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required minlength="3" maxlength="20" data-rule="username" data-required="Choose a username." aria-describedby="s-username-hint s-username-error">
+          <p class="hint" id="s-username-hint">3-20 letters, numbers or underscores. This is your public name.</p>
+          <p class="field-error" id="s-username-error" aria-live="polite"></p>
         </div>
         <div class="field">
           <label for="s-email">Email</label>
@@ -72,8 +74,8 @@
         </div>
         <div class="field">
           <label for="s-password">Password</label>
-          <input class="input" id="s-password" name="password" type="password" autocomplete="new-password" required minlength="8" data-required="Choose a password." aria-describedby="s-password-hint s-password-error">
-          <p class="hint" id="s-password-hint">At least 8 characters.</p>
+          <input class="input" id="s-password" name="password" type="password" autocomplete="new-password" required minlength="8" data-strength data-required="Choose a password." aria-describedby="s-password-hint s-password-error">
+          <p class="hint" id="s-password-hint">At least 8 characters. Mix capitals, numbers and symbols to make it stronger.</p>
           <p class="field-error" id="s-password-error" aria-live="polite"></p>
         </div>
         <div class="field">
@@ -88,11 +90,6 @@
         <button class="btn btn-primary btn-block" type="submit">Create account</button>
         <p class="form-switch">Already have an account? <a href="login.html">Log in</a></p>
       </form>
-
-      <div class="form-success" id="signup-success" tabindex="-1" role="status" hidden style="margin-top:16px">
-        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>
-        <div><strong>Welcome to StayNest!</strong>This is a design preview, so no account was actually created. Real sign-up arrives with the StayNest backend.</div>
-      </div>
     </div>
     <div class="reveal" style="--d:120ms">
       <div class="media ratio-4x3"><img src="https://images.unsplash.com/photo-1765547090903-348b711f0eee?auto=format&fit=crop&w=1200&h=900&q=72" alt="Bedroom with wooden accents and soft morning light" width="1200" height="900" loading="lazy"></div>
@@ -145,6 +142,7 @@
 <button class="to-top" type="button" aria-label="Back to top" data-to-top>
   <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
+<script src="js/password-rules.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

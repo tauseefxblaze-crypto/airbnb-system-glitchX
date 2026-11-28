@@ -31,6 +31,45 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('is-visible'); }, 2800);
   }
 
+  /* ---------- Accounts: who is logged in + a helper to call the server ---------- */
+  // On GitHub Pages (or any static copy) there is no server: /api/session fails and accounts switch off
+  var OFFLINE_MESSAGE = 'Accounts need the StayNest server. This copy of the site is a design preview.';
+  var session = { user: null, wishlist: [], csrfToken: '', offline: false };
+  var sessionReady = fetch('/api/session', { credentials: 'same-origin', cache: 'no-store' })
+    .then(function (res) { if (!res.ok) throw new Error('no server'); return res.json(); })
+    .then(function (data) {
+      session.user = data.user || null;
+      session.wishlist = Array.isArray(data.wishlist) ? data.wishlist : [];
+      session.csrfToken = data.csrfToken || '';
+    })
+    .catch(function () { session.offline = true; })
+    .then(function () { return session; });
+
+  // Sends JSON plus the CSRF token; resolves to the reply's data with .status and .ok added
+  function api(method, url, body) {
+    return sessionReady.then(function () {
+      if (session.offline) throw new Error(OFFLINE_MESSAGE);
+      return fetch(url, {
+        method: method,
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': session.csrfToken },
+        body: body === undefined ? undefined : JSON.stringify(body)
+      });
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        data.status = res.status;
+        data.ok = res.ok;
+        return data;
+      });
+    });
+  }
+
+  // Only same-site paths like "/account", never "//evil.com"
+  function nextUrl() {
+    var next = new URLSearchParams(window.location.search).get('next') || '';
+    return /^\/(?![/\\])/.test(next) ? next : '';
+  }
+
   /* ---------- Dark mode (follows the device; the toggle is an override) ---------- */
   var themeBtn = $('[data-theme-toggle]');
   var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -170,11 +209,94 @@
     storage.set(WISH_KEY, JSON.stringify(wishlist));
     syncHearts();
     document.dispatchEvent(new CustomEvent('wishlist:change'));
+    pushWishlist();
   });
   window.addEventListener('storage', function (e) {
     if (e.key === WISH_KEY) { wishlist = readWishlist(); syncHearts(); document.dispatchEvent(new CustomEvent('wishlist:change')); }
   });
   syncHearts();
+
+  // Logged in: the wishlist lives in the account, so it follows you to any device.
+  // On the first page after logging in, stays saved while logged out are added to it once.
+  var WISH_OWNER_KEY = 'sn-wishlist-account';
+  function pushWishlist() {
+    if (session.user) api('PUT', '/api/wishlist', { ids: wishlist }).catch(function () { /* still saved on this device */ });
+  }
+  function forgetAccountWishlist() {
+    wishlist = [];
+    storage.remove(WISH_KEY);
+    storage.remove(WISH_OWNER_KEY);
+  }
+  sessionReady.then(function () {
+    if (session.offline) return;
+    if (!session.user) {
+      // signed out from another device: don't leave this account's list behind on a shared computer
+      if (storage.get(WISH_OWNER_KEY)) {
+        forgetAccountWishlist();
+        syncHearts();
+        document.dispatchEvent(new CustomEvent('wishlist:change'));
+      }
+      return;
+    }
+    var merge = storage.get(WISH_OWNER_KEY) !== '1';
+    var list = session.wishlist.slice();
+    if (merge) wishlist.forEach(function (id) { if (list.indexOf(id) === -1) list.push(id); });
+    var changed = list.length !== session.wishlist.length;
+    wishlist = list;
+    storage.set(WISH_KEY, JSON.stringify(wishlist));
+    storage.set(WISH_OWNER_KEY, '1');
+    syncHearts();
+    document.dispatchEvent(new CustomEvent('wishlist:change'));
+    if (changed) pushWishlist();
+  });
+
+  /* ---------- Header: account link + log out when logged in ---------- */
+  sessionReady.then(function () {
+    if (!session.user) return;
+    var name = session.user.username;
+    root.classList.add('is-logged-in');
+    $$('.header-login').forEach(function (link) {
+      link.href = '/account';
+      var label = document.createElement('span');
+      label.className = 'header-name';
+      label.textContent = name;
+      link.replaceChild(label, link.lastChild);
+      link.title = name;
+      link.setAttribute('aria-label', 'Your account (' + name + ')');
+      if (window.location.pathname === '/account') link.setAttribute('aria-current', 'page');
+      var out = document.createElement('button');
+      out.type = 'button';
+      out.className = 'icon-btn header-logout';
+      out.setAttribute('aria-label', 'Log out');
+      out.title = 'Log out';
+      out.setAttribute('data-logout', '');
+      out.innerHTML = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>';
+      link.after(out);
+    });
+    $$('.nav-login').forEach(function (item) {
+      var link = item.querySelector('a');
+      if (link) { link.href = '/account'; link.textContent = 'Your account'; }
+      var out = document.createElement('button');
+      out.type = 'button';
+      out.className = 'nav-logout';
+      out.setAttribute('data-logout', '');
+      out.textContent = 'Log out';
+      item.appendChild(out);
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-logout]');
+    if (!btn) return;
+    btn.disabled = true;
+    api('POST', '/api/logout').then(function () {
+      forgetAccountWishlist();
+      window.location.href = '/';
+    }).catch(function () {
+      btn.disabled = false;
+      toast("Couldn't log out. Check your connection and try again.");
+    });
+  });
 
   /* ---------- Date helpers (YYYY-MM-DD strings) ---------- */
   function todayISO() {
@@ -325,8 +447,118 @@
     });
   }
 
-  /* ---------- Form validation (front-end only) ---------- */
+  /* ---------- Password fields: show/hide button + live strength meter ---------- */
+  // The same rules (js/password-rules.js) run again on the server, so the browser check is only for speed
+  var Rules = window.SNRules;
+  function ruleContext(form) {
+    var u = form && form.elements.username;
+    var m = form && form.elements.email;
+    return { username: u ? u.value.trim() : (session.user ? session.user.username : ''), email: m ? m.value.trim() : '' };
+  }
+  $$('input[type="password"]').forEach(function (input) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pw-wrap';
+    input.parentNode.insertBefore(wrap, input);
+    wrap.appendChild(input);
+    var eye = document.createElement('button');
+    eye.type = 'button';
+    eye.className = 'pw-toggle';
+    eye.setAttribute('aria-label', 'Show password');
+    eye.setAttribute('aria-pressed', 'false');
+    eye.setAttribute('aria-controls', input.id);
+    eye.innerHTML = '<svg class="i i-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>' +
+      '<svg class="i i-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+    eye.addEventListener('click', function () {
+      var show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      eye.setAttribute('aria-pressed', String(show));
+      input.focus();
+    });
+    wrap.appendChild(eye);
+  });
+
+  var LEVEL_TEXT = { bad: 'Bad', good: 'Good', strong: 'Strong' };
+  $$('input[data-strength]').forEach(function (input) {
+    if (!Rules) return;
+    var meter = document.createElement('div');
+    meter.className = 'strength';
+    meter.innerHTML = '<span class="strength-bar" aria-hidden="true"><span></span></span><span class="strength-label" aria-live="polite"></span>';
+    var label = meter.lastChild;
+    (input.closest('.pw-wrap') || input).after(meter);
+    var update = function () {
+      var level = input.value ? Rules.strength(input.value, ruleContext(input.form)).level : '';
+      var text = level ? 'Strength: ' + LEVEL_TEXT[level] : '';
+      meter.setAttribute('data-level', level);
+      if (label.textContent !== text) label.textContent = text;
+    };
+    input.addEventListener('input', update);
+    if (input.form) {
+      input.form.addEventListener('input', function (e) { if (e.target.name === 'username' || e.target.name === 'email') update(); });
+      input.form.addEventListener('reset', function () { setTimeout(update, 0); });
+    }
+    update();
+  });
+
+  // Reset page: take the one-time token out of the address bar (and out of history) straight away
+  var resetForm = $('#reset-form');
+  if (resetForm) {
+    resetForm.elements.token.value = new URLSearchParams(window.location.search).get('token') || '';
+    if (window.location.search) history.replaceState(null, '', window.location.pathname);
+    if (!resetForm.elements.token.value) {
+      var resetError = $('[data-form-error]', resetForm);
+      resetError.textContent = 'This reset link is incomplete. Ask for a new one on the Forgot password page.';
+      resetError.hidden = false;
+    }
+  }
+
+  /* ---------- Forms: check in the browser, then (for account forms) send to the server ---------- */
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  // What happens after a successful account form (others just show their success message)
+  var AFTER_SUCCESS = {
+    login: function () { storage.remove(WISH_OWNER_KEY); window.location.href = nextUrl() || '/account'; },
+    signup: function () { storage.remove(WISH_OWNER_KEY); window.location.href = nextUrl() || '/account'; },
+    deleted: function () { forgetAccountWishlist(); window.location.href = '/'; }
+  };
+
+  function sendForm(form, fields, success) {
+    if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) return;
+    var errorBox = $('[data-form-error]', form);
+    var button = $('[type="submit"]', form);
+    var showError = function (message) {
+      if (errorBox) { errorBox.textContent = message; errorBox.hidden = !message; } else if (message) toast(message);
+    };
+    var body = {};
+    fields.forEach(function (f) { body[f.name] = f.type === 'checkbox' ? f.checked : f.value; });
+    $$('input[type="hidden"]', form).forEach(function (f) { if (f.name) body[f.name] = f.value; });
+    showError('');
+    button.disabled = true;
+    api('POST', form.dataset.api, body).then(function (data) {
+      if (data.ok) {
+        if (AFTER_SUCCESS[form.dataset.done]) return AFTER_SUCCESS[form.dataset.done](data);
+        form.reset();
+        fields.forEach(function (f) { f.removeAttribute('aria-invalid'); });
+        if (form.hasAttribute('data-hide-on-success')) form.hidden = true;
+        if (success) { success.hidden = false; success.focus(); }
+        form.dispatchEvent(new CustomEvent('api:success', { detail: data }));
+        return;
+      }
+      var first = null;
+      Object.keys(data.errors || {}).forEach(function (name) {
+        var field = form.elements[name];
+        if (!field || !field.id) return;
+        var error = document.getElementById(field.id + '-error');
+        if (error) error.textContent = data.errors[name];
+        field.setAttribute('aria-invalid', 'true');
+        if (!first) first = field;
+      });
+      if (first) first.focus();
+      showError(data.error || (first ? '' : 'Something went wrong. Please try again.'));
+    }).catch(function () {
+      showError(session.offline ? OFFLINE_MESSAGE : "We couldn't reach StayNest. Check your connection and try again.");
+    }).then(function () { button.disabled = false; });
+  }
+
   $$('form[data-validate]').forEach(function (form) {
     var fields = $$('input, select, textarea', form).filter(function (f) { return f.name && f.type !== 'hidden'; });
     var success = document.getElementById(form.dataset.success);
@@ -340,6 +572,8 @@
       else if (field.type === 'email' && value && !EMAIL_RE.test(value)) message = 'Enter a valid email, like name@example.com.';
       else if (field.minLength > 0 && value && value.length < field.minLength) message = 'Please write at least ' + field.minLength + ' characters (you have ' + value.length + ').';
       else if (field.dataset.pattern && value && !new RegExp(field.dataset.pattern).test(value)) message = field.dataset.patternMessage || 'Please check this field.';
+      else if (Rules && field.dataset.rule === 'username') message = Rules.usernameProblem(value);
+      else if (Rules && field.hasAttribute('data-strength') && field.value) message = Rules.passwordProblem(field.value, ruleContext(form));
       var error = document.getElementById(field.id + '-error');
       if (error) error.textContent = message;
       if (message) field.setAttribute('aria-invalid', 'true'); else field.removeAttribute('aria-invalid');
@@ -360,6 +594,7 @@
         toast(invalid.length === 1 ? 'Please fix the highlighted field.' : 'Please fix the ' + invalid.length + ' highlighted fields.');
         return;
       }
+      if (form.dataset.api) { sendForm(form, fields, success); return; }
       form.reset();
       fields.forEach(function (f) { f.removeAttribute('aria-invalid'); });
       if (success) {
@@ -466,7 +701,26 @@
       if (!rIn.value) { toast('Pick a check-in date first.'); rIn.focus(); return; }
       if (!rOut.value || rOut.value <= rIn.value) { toast('Pick a check-out date after check-in.'); rOut.focus(); return; }
       if (nightsBetween(rIn.value, rOut.value) > 30) { toast('Stays can be up to 30 nights.'); rOut.focus(); return; }
-      toast('Lovely choice! Online booking opens soon - this page is a design preview.');
+      var button = $('[type="submit"]', reserve);
+      sessionReady.then(function () {
+        if (session.offline) { toast('Lovely choice! Online booking needs the StayNest server - this copy is a design preview.'); return; }
+        if (!session.user) {
+          toast('Log in to reserve this stay.');
+          setTimeout(function () { window.location.href = '/login.html?next=' + encodeURIComponent(window.location.pathname); }, 900);
+          return;
+        }
+        button.disabled = true;
+        // the server works out the price itself; only the stay, dates and guests are sent
+        return api('POST', '/api/bookings', {
+          stay: reserve.dataset.stay, checkin: rIn.value, checkout: rOut.value, guests: Number(reserve.elements.guests.value)
+        }).then(function (data) {
+          if (data.ok) { window.location.href = '/account#trips'; return; }
+          var errors = data.errors || {};
+          toast(data.error || errors.checkin || errors.checkout || errors.guests || 'Something went wrong. Please try again.');
+        });
+      }).catch(function () {
+        toast("We couldn't reach StayNest. Check your connection and try again.");
+      }).then(function () { button.disabled = false; });
     });
 
     $$('[data-goto-reserve]').forEach(function (btn) {
@@ -509,6 +763,7 @@
       var monthly = Math.round((nightly * nights * 0.97) / 500) * 500; // after a 3% host fee
       earningsOut.textContent = formatPKR(monthly);
     };
+    calc.addEventListener('submit', function (e) { e.preventDefault(); });
     citySelect.addEventListener('change', updateEarnings);
     nightsRange.addEventListener('input', updateEarnings);
     updateEarnings();
@@ -541,4 +796,7 @@
     }, { threshold: 0.4 });
     counters.forEach(function (el) { renderCount(el, 0); countObserver.observe(el); });
   }
+
+  // for js/account.js
+  window.StayNest = { api: api, session: sessionReady, toast: toast, formatPKR: formatPKR, forgetWishlist: forgetAccountWishlist };
 })();

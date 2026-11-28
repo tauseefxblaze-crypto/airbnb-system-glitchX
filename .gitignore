@@ -1,2 +1,6 @@
 # Local preview config for the Claude app, not part of the site
 .claude/
+
+# Installed packages and the local database / dev mailbox
+node_modules/
+data/
